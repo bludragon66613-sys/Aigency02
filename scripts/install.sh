@@ -309,6 +309,21 @@ install_claude_code() {
     done < <(find "$REPO_ROOT/$dir" -name "*.md" -type f -print0)
   done
   ok "Claude Code: $count agents -> $dest"
+
+  # Install superpowers skills to ~/.claude/skills/
+  if [[ -d "$REPO_ROOT/skills" ]]; then
+    local skills_dest="${HOME}/.claude/skills"
+    local skill_count=0
+    local skill_dir skill_name
+    for skill_dir in "$REPO_ROOT/skills"/*/; do
+      [[ -f "$skill_dir/SKILL.md" ]] || continue
+      skill_name="$(basename "$skill_dir")"
+      mkdir -p "$skills_dest/$skill_name"
+      cp "$skill_dir/SKILL.md" "$skills_dest/$skill_name/SKILL.md"
+      (( skill_count++ )) || true
+    done
+    ok "Claude Code: $skill_count skills -> $skills_dest"
+  fi
 }
 
 install_copilot() {
